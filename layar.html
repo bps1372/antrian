@@ -3,246 +3,94 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel Kontrol - Antrian PST BPS Kota Solok</title>
+    <title>Layar Utama - Antrian BPS Kota Solok</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
-        /* Custom scrollbar untuk tabel */
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@700;900&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #e5e7eb; }
     </style>
 </head>
-<body class="flex flex-col h-screen overflow-hidden">
+<body class="h-screen flex flex-col overflow-hidden">
     <!-- Header -->
-    <header class="bg-[#1d4ed8] text-white p-5 shadow-md flex justify-between items-center z-10 shrink-0">
-        <div>
-            <h1 class="text-2xl font-bold">Sistem Antrian PST</h1>
-            <p class="text-sm text-blue-200">Badan Pusat Statistik Kota Solok</p>
+    <header class="bg-[#1d4ed8] text-white p-4 shadow-xl flex justify-between items-center z-10 shrink-0">
+        <div class="flex items-center gap-4 pl-4">
+            <h1 class="text-3xl font-black uppercase tracking-widest text-white drop-shadow-md">Pelayanan Statistik Terpadu</h1>
         </div>
-        <div class="text-right">
-            <div id="clock" class="text-3xl font-bold tracking-wider">00.00.00</div>
-            <div id="date" class="text-sm font-medium">Tanggal</div>
-        </div>
+        <div id="clock" class="text-4xl font-black text-yellow-300 pr-4">00.00.00</div>
     </header>
 
-    <!-- Main Content (Bagi 2 Kolom) -->
-    <main class="flex-grow flex flex-col md:flex-row p-6 gap-6 overflow-hidden">
-        
-        <!-- KOLOM KIRI: Form Input -->
-        <div class="w-full md:w-1/3 bg-white rounded-xl shadow-md flex flex-col h-full">
-            <div class="p-8 flex-grow overflow-y-auto">
-                <h2 class="text-xl font-bold text-gray-800 mb-8 text-center">Silakan Ambil Antrian</h2>
-                
-                <form id="queueForm" class="space-y-6">
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">Nama Lengkap</label>
-                        <input type="text" id="nama" required class="w-full border-2 border-gray-200 rounded-lg p-4 text-gray-800 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition-all placeholder-gray-400 text-lg" placeholder="Masukkan nama Anda di sini...">
-                    </div>
-                    
-                    <div class="pt-4">
-                        <label class="block text-sm font-semibold text-gray-700 mb-3 text-center">Pilih Tujuan Layanan</label>
-                        <div class="grid grid-cols-2 gap-4">
-                            <button type="button" onclick="tambahAntrian('PST')" class="bg-blue-50 hover:bg-blue-600 hover:text-white text-blue-700 border border-blue-200 font-bold py-5 rounded-xl transition-all shadow-sm">1. PST</button>
-                            <button type="button" onclick="tambahAntrian('Pengaduan')" class="bg-green-50 hover:bg-green-600 hover:text-white text-green-700 border border-green-200 font-bold py-5 rounded-xl transition-all shadow-sm">2. Pengaduan</button>
-                            <button type="button" onclick="tambahAntrian('Konsul')" class="bg-purple-50 hover:bg-purple-600 hover:text-white text-purple-700 border border-purple-200 font-bold py-5 rounded-xl transition-all shadow-sm">3. Layanan Konsul</button>
-                            <button type="button" onclick="tambahAntrian('Prioritas')" class="bg-red-50 hover:bg-red-600 hover:text-white text-red-700 border border-red-200 font-bold py-5 rounded-xl transition-all shadow-sm">4. Prioritas</button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>
-
-        <!-- KOLOM KANAN: Tabel Antrian (Admin Panel) -->
-        <div class="w-full md:w-2/3 bg-white rounded-xl shadow-md flex flex-col h-full">
-            <div class="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50 rounded-t-xl">
-                <h2 class="text-lg font-bold text-gray-800">Daftar Tunggu Antrian Hari Ini</h2>
-                <div class="text-sm px-3 py-1 bg-blue-100 text-blue-700 rounded-full font-semibold" id="totalWaiting">0 Menunggu</div>
+    <!-- Main Display -->
+    <div class="flex-grow flex p-6 gap-6 bg-gray-100">
+        <!-- Panggilan Saat Ini -->
+        <div class="w-1/2 bg-white rounded-[2rem] shadow-2xl flex flex-col items-center justify-center border-[12px] border-blue-50 p-8 text-center relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-4 bg-blue-600"></div>
+            
+            <h2 class="text-3xl text-gray-500 font-bold mb-4 uppercase tracking-wider">Panggilan Untuk</h2>
+            
+            <!-- Area Nama Pendaftar -->
+            <div id="currentName" class="text-6xl font-black text-gray-900 mb-8 leading-tight min-h-[90px] break-words w-full px-4">-</div>
+            
+            <!-- Nomor dan Loket -->
+            <div class="bg-[#eff6ff] w-full py-10 rounded-3xl mb-8 border border-blue-100 shadow-inner">
+                <div id="currentNumber" class="text-8xl font-black text-[#1d4ed8] tracking-tighter drop-shadow-sm">-</div>
             </div>
             
-            <!-- Area Tabel Scrollable -->
-            <div class="flex-grow overflow-auto p-2">
-                <table class="min-w-full text-left border-collapse">
-                    <thead class="sticky top-0 bg-white shadow-sm z-10">
-                        <tr class="text-gray-500 text-xs uppercase tracking-wider border-b border-gray-200">
-                            <th class="py-3 px-4 font-semibold">No</th>
-                            <th class="py-3 px-4 font-semibold">Nama Pengunjung</th>
-                            <th class="py-3 px-4 font-semibold">Layanan</th>
-                            <th class="py-3 px-4 font-semibold">Waktu Masuk</th>
-                            <th class="py-3 px-4 font-semibold text-right">Aksi Admin</th>
-                        </tr>
-                    </thead>
-                    <tbody id="queueTableBody" class="text-sm text-gray-700 divide-y divide-gray-100">
-                        <!-- Data dimasukkan via JS -->
-                    </tbody>
-                </table>
-                <div id="emptyState" class="text-center py-12 text-gray-400 hidden flex flex-col items-center">
-                    <svg class="w-16 h-16 text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
-                    <p class="font-medium">Belum ada antrian. Silakan input di sebelah kiri.</p>
-                </div>
-            </div>
+            <div id="currentLocket" class="text-4xl font-bold text-red-600 bg-red-50 px-10 py-5 rounded-full uppercase border-2 border-red-100 shadow-sm">-</div>
         </div>
 
-    </main>
+        <!-- Riwayat Loket -->
+        <div class="w-1/2 flex flex-col gap-6">
+            <div class="flex-1 bg-white rounded-2xl shadow-xl flex items-center justify-between p-10 border-l-[12px] border-[#3b82f6] relative overflow-hidden">
+                <div class="absolute right-0 top-0 opacity-5 w-32 h-32 bg-blue-500 rounded-bl-full"></div>
+                <div class="text-3xl text-gray-600 font-bold uppercase tracking-wider">Loket PST</div>
+                <div id="loketPST" class="text-7xl font-black text-gray-800 drop-shadow-md">-</div>
+            </div>
+            <div class="flex-1 bg-white rounded-2xl shadow-xl flex items-center justify-between p-10 border-l-[12px] border-[#22c55e] relative overflow-hidden">
+                <div class="absolute right-0 top-0 opacity-5 w-32 h-32 bg-green-500 rounded-bl-full"></div>
+                <div class="text-3xl text-gray-600 font-bold uppercase tracking-wider">Pengaduan</div>
+                <div id="loketPengaduan" class="text-7xl font-black text-gray-800 drop-shadow-md">-</div>
+            </div>
+            <div class="flex-1 bg-white rounded-2xl shadow-xl flex items-center justify-between p-10 border-l-[12px] border-[#a855f7] relative overflow-hidden">
+                <div class="absolute right-0 top-0 opacity-5 w-32 h-32 bg-purple-500 rounded-bl-full"></div>
+                <div class="text-3xl text-gray-600 font-bold uppercase tracking-wider">Konsultasi</div>
+                <div id="loketKonsul" class="text-7xl font-black text-gray-800 drop-shadow-md">-</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ticker/Marquee -->
+    <div class="bg-gray-900 text-white p-4 text-2xl font-bold whitespace-nowrap overflow-hidden shrink-0">
+        <marquee scrollamount="8">Selamat Datang di Badan Pusat Statistik Kota Solok. Melayani dengan Profesional, Integritas, dan Amanah. Data Mencerdaskan Bangsa.</marquee>
+    </div>
 
     <script>
-        // Jam Real-time
         function updateClock() {
             const now = new Date();
-            const timeString = now.toLocaleTimeString('id-ID', { hour12: false }).replace(/:/g, '.');
-            document.getElementById('clock').innerText = timeString;
-            document.getElementById('date').innerText = now.toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+            document.getElementById('clock').innerText = now.toLocaleTimeString('id-ID', { hour12: false }).replace(/:/g, '.');
         }
         setInterval(updateClock, 1000);
-        updateClock();
 
-        // Reset Harian Otomatis
-        function checkDailyReset() {
-            const today = new Date().toDateString();
-            const storedDate = localStorage.getItem('queueDate');
-            if (storedDate !== today) {
-                localStorage.setItem('queueDate', today);
-                localStorage.setItem('counters', JSON.stringify({ PST: 0, Pengaduan: 0, Konsul: 0, Prioritas: 0 }));
-                localStorage.setItem('queueList', JSON.stringify([]));
-                localStorage.removeItem('currentCall');
-                localStorage.removeItem('activeLokets');
-            }
-        }
-
-        // Tampilkan Tabel
-        function renderTable() {
-            let queues = JSON.parse(localStorage.getItem('queueList')) || [];
-            const tbody = document.getElementById('queueTableBody');
-            const emptyState = document.getElementById('emptyState');
-            
-            tbody.innerHTML = '';
-            
-            // Prioritas diurutkan paling atas jika statusnya 'Menunggu'
-            queues.sort((a, b) => {
-                if (a.status === 'Menunggu' && b.status === 'Menunggu') {
-                    if (a.kategori === 'Prioritas' && b.kategori !== 'Prioritas') return -1;
-                    if (b.kategori === 'Prioritas' && a.kategori !== 'Prioritas') return 1;
-                }
-                return a.id - b.id; // Sisanya urut berdasarkan waktu
-            });
-
-            let waitingCount = 0;
-
-            if(queues.length === 0) {
-                emptyState.classList.remove('hidden');
+        function updateDisplay() {
+            const currentCall = JSON.parse(localStorage.getItem('currentCall'));
+            if (currentCall) {
+                document.getElementById('currentName').innerText = currentCall.nama;
+                document.getElementById('currentNumber').innerText = currentCall.noAntrian;
+                document.getElementById('currentLocket').innerText = `LOKET ${currentCall.kategori}`;
             } else {
-                emptyState.classList.add('hidden');
-                
-                queues.forEach(item => {
-                    const tr = document.createElement('tr');
-                    const badgeColor = item.kategori === 'Prioritas' ? 'bg-red-100 text-red-700' : 'bg-blue-50 text-blue-700';
-                    const isPrioritasRow = item.kategori === 'Prioritas' && item.status === 'Menunggu' ? 'bg-red-50/50' : 'hover:bg-gray-50';
-                    
-                    tr.className = `transition-colors ${isPrioritasRow}`;
-                    
-                    // Logika tombol aksi
-                    let actionButton = '';
-                    if (item.status === 'Menunggu') {
-                        waitingCount++;
-                        actionButton = `<button onclick="panggilKeLayar('${item.id}')" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow-sm text-sm font-semibold transition-all w-full flex justify-center items-center gap-2">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"></path></svg> Panggil
-                        </button>`;
-                    } else {
-                        actionButton = `<span class="text-green-600 font-semibold bg-green-50 px-4 py-2 rounded-lg block text-center border border-green-100"><span class="text-xs">✔</span> Dipanggil</span>`;
-                    }
-
-                    tr.innerHTML = `
-                        <td class="py-4 px-4 font-bold text-gray-900">${item.noAntrian}</td>
-                        <td class="py-4 px-4 font-semibold text-gray-800">${item.nama}</td>
-                        <td class="py-4 px-4"><span class="px-2 py-1 rounded text-xs font-bold ${badgeColor}">${item.kategori}</span></td>
-                        <td class="py-4 px-4 text-gray-500">${item.timestamp}</td>
-                        <td class="py-4 px-4 text-right w-40">${actionButton}</td>
-                    `;
-                    tbody.appendChild(tr);
-                });
+                // Reset Layar jika ganti hari
+                document.getElementById('currentName').innerText = '-';
+                document.getElementById('currentNumber').innerText = '-';
+                document.getElementById('currentLocket').innerText = '-';
             }
 
-            document.getElementById('totalWaiting').innerText = `${waitingCount} Menunggu`;
+            const activeLokets = JSON.parse(localStorage.getItem('activeLokets')) || { PST: '-', Pengaduan: '-', Konsul: '-' };
+            document.getElementById('loketPST').innerText = activeLokets.PST;
+            document.getElementById('loketPengaduan').innerText = activeLokets.Pengaduan;
+            document.getElementById('loketKonsul').innerText = activeLokets.Konsul;
         }
 
-        // Fungsi saat tombol layanan diklik (Masuk ke tabel, bukan ke TV)
-        function tambahAntrian(kategori) {
-            const nama = document.getElementById('nama').value.trim();
-
-            if(!nama) {
-                alert('Mohon isi Nama Lengkap terlebih dahulu.');
-                document.getElementById('nama').focus();
-                return;
-            }
-
-            checkDailyReset();
-
-            const prefixes = { PST: 'A', Pengaduan: 'B', Konsul: 'C', Prioritas: 'P' };
-            let counters = JSON.parse(localStorage.getItem('counters')) || { PST: 0, Pengaduan: 0, Konsul: 0, Prioritas: 0 };
-            counters[kategori]++;
-            
-            const noAntrian = `${prefixes[kategori]}-${String(counters[kategori]).padStart(3, '0')}`;
-            const timeNow = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
-            
-            const newQueue = {
-                id: Date.now(), // ID unik untuk fungsi panggil
-                noAntrian: noAntrian,
-                nama: nama,
-                kategori: kategori,
-                timestamp: timeNow,
-                status: 'Menunggu' // Status awal
-            };
-
-            // Update memori sistem
-            localStorage.setItem('counters', JSON.stringify(counters));
-            
-            // Masukkan ke antrian lokal
-            let queues = JSON.parse(localStorage.getItem('queueList')) || [];
-            queues.push(newQueue);
-            localStorage.setItem('queueList', JSON.stringify(queues));
-
-            // Perbarui UI Tabel dan kosongkan form
-            renderTable();
-            document.getElementById('queueForm').reset();
-        }
-
-        // Fungsi Admin: Memanggil orang ke TV
-        function panggilKeLayar(id) {
-            let queues = JSON.parse(localStorage.getItem('queueList')) || [];
-            const index = queues.findIndex(q => q.id == id);
-            
-            if(index !== -1) {
-                // Ubah status jadi dipanggil
-                queues[index].status = 'Dipanggil';
-                const currentCall = queues[index];
-                
-                // Simpan perubahan ke memori
-                localStorage.setItem('queueList', JSON.stringify(queues));
-                
-                // Kirim perintah ke Layar TV
-                localStorage.setItem('currentCall', JSON.stringify(currentCall));
-
-                let activeLokets = JSON.parse(localStorage.getItem('activeLokets')) || { PST: '-', Pengaduan: '-', Konsul: '-' };
-                if(currentCall.kategori === 'Prioritas') {
-                    activeLokets.PST = currentCall.noAntrian; 
-                } else {
-                    activeLokets[currentCall.kategori] = currentCall.noAntrian;
-                }
-                localStorage.setItem('activeLokets', JSON.stringify(activeLokets));
-
-                // Render ulang tabel (tombol berubah jadi 'Dipanggil')
-                renderTable();
-            }
-        }
-
-        // Inisialisasi awal
-        checkDailyReset();
-        renderTable();
-        
-        // Dengarkan perubahan antar tab
-        window.addEventListener('storage', renderTable);
+        window.addEventListener('storage', updateDisplay);
+        updateDisplay(); 
     </script>
 </body>
 </html>
