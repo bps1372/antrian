@@ -12,11 +12,11 @@
 </head>
 <body class="h-screen flex flex-col overflow-hidden">
     <!-- Header -->
-    <header class="bg-blue-800 text-white p-4 shadow-xl flex justify-between items-center">
+    <header class="bg-[#1d4ed8] text-white p-4 shadow-xl flex justify-between items-center">
         <div class="flex items-center gap-4">
             <h1 class="text-3xl font-black uppercase tracking-widest">Layanan PST BPS Kota Solok</h1>
         </div>
-        <div id="clock" class="text-4xl font-black text-yellow-300">00:00:00</div>
+        <div id="clock" class="text-4xl font-black text-yellow-300">00.00.00</div>
     </header>
 
     <!-- Main Display -->
@@ -60,7 +60,8 @@
 
     <script>
         function updateClock() {
-            document.getElementById('clock').innerText = new Date().toLocaleTimeString('id-ID', { hour12: false });
+            const now = new Date();
+            document.getElementById('clock').innerText = now.toLocaleTimeString('id-ID', { hour12: false }).replace(/:/g, '.');
         }
         setInterval(updateClock, 1000);
 
@@ -71,6 +72,11 @@
                 document.getElementById('currentName').innerText = currentCall.nama;
                 document.getElementById('currentNumber').innerText = currentCall.noAntrian;
                 document.getElementById('currentLocket').innerText = `LOKET ${currentCall.kategori}`;
+            } else {
+                // Kondisi jika reset hari
+                document.getElementById('currentName').innerText = '-';
+                document.getElementById('currentNumber').innerText = '-';
+                document.getElementById('currentLocket').innerText = '-';
             }
 
             // Update panel riwayat di kanan
@@ -80,9 +86,8 @@
             document.getElementById('loketKonsul').innerText = activeLokets.Konsul;
         }
 
-        // Tangkap perubahan secara seketika saat tab user mensubmit data
         window.addEventListener('storage', updateDisplay);
-        updateDisplay(); // initial load
+        updateDisplay(); 
     </script>
 </body>
 </html>
