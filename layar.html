@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Layar Utama - Antrian BPS Kota Solok</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@700;900&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #e5e7eb; }
+    </style>
+</head>
+<body class="h-screen flex flex-col overflow-hidden">
+    <!-- Header -->
+    <header class="bg-blue-800 text-white p-4 shadow-xl flex justify-between items-center">
+        <div class="flex items-center gap-4">
+            <h1 class="text-3xl font-black uppercase tracking-widest">Layanan PST BPS Kota Solok</h1>
+        </div>
+        <div id="clock" class="text-4xl font-black text-yellow-300">00:00:00</div>
+    </header>
+
+    <!-- Main Display -->
+    <div class="flex-grow flex p-6 gap-6">
+        <!-- Current Called Area -->
+        <div class="w-1/2 bg-white rounded-3xl shadow-2xl flex flex-col items-center justify-center border-8 border-blue-100">
+            <h2 class="text-4xl text-gray-500 font-bold mb-4 uppercase">Nomor Panggilan</h2>
+            <div id="currentNumber" class="text-9xl font-black text-blue-700 tracking-tighter mb-4">-</div>
+            <div id="currentLocket" class="text-5xl font-bold text-red-600 bg-red-100 px-8 py-4 rounded-full">-</div>
+        </div>
+
+        <!-- Next in line Area -->
+        <div class="w-1/2 flex flex-col gap-6">
+            <div class="flex-1 bg-white rounded-2xl shadow-lg flex items-center justify-between p-8 border-l-8 border-blue-500">
+                <div class="text-3xl text-gray-600 font-bold">LOKET PST</div>
+                <div id="loketPST" class="text-6xl font-black text-gray-800">-</div>
+            </div>
+            <div class="flex-1 bg-white rounded-2xl shadow-lg flex items-center justify-between p-8 border-l-8 border-green-500">
+                <div class="text-3xl text-gray-600 font-bold">PENGADUAN</div>
+                <div id="loketPengaduan" class="text-6xl font-black text-gray-800">-</div>
+            </div>
+            <div class="flex-1 bg-white rounded-2xl shadow-lg flex items-center justify-between p-8 border-l-8 border-purple-500">
+                <div class="text-3xl text-gray-600 font-bold">KONSULTASI</div>
+                <div id="loketKonsul" class="text-6xl font-black text-gray-800">-</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ticker/Marquee -->
+    <div class="bg-gray-900 text-white p-3 text-2xl font-bold whitespace-nowrap overflow-hidden">
+        <marquee>Selamat Datang di Pelayanan Statistik Terpadu (PST) Badan Pusat Statistik Kota Solok. Melayani dengan Profesional, Integritas, dan Amanah.</marquee>
+    </div>
+
+    <script>
+        function updateClock() {
+            document.getElementById('clock').innerText = new Date().toLocaleTimeString('id-ID', { hour12: false });
+        }
+        setInterval(updateClock, 1000);
+
+        function updateDisplay() {
+            const currentCall = JSON.parse(localStorage.getItem('currentCall'));
+            if (currentCall) {
+                document.getElementById('currentNumber').innerText = currentCall.noAntrian;
+                document.getElementById('currentLocket').innerText = `LOKET ${currentCall.kategori.toUpperCase()}`;
+            }
+
+            const activeLokets = JSON.parse(localStorage.getItem('activeLokets')) || { PST: '-', Pengaduan: '-', Konsul: '-' };
+            document.getElementById('loketPST').innerText = activeLokets.PST;
+            document.getElementById('loketPengaduan').innerText = activeLokets.Pengaduan;
+            document.getElementById('loketKonsul').innerText = activeLokets.Konsul;
+        }
+
+        // Listen for updates from other tabs
+        window.addEventListener('storage', updateDisplay);
+        updateDisplay(); // initial load
+    </script>
+</body>
+</html>
