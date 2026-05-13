@@ -22,9 +22,18 @@
             <h1 class="text-2xl font-bold">Sistem Antrian PST</h1>
             <p class="text-sm text-blue-200">Badan Pusat Statistik Kota Solok</p>
         </div>
-        <div class="text-right">
-            <div id="clock" class="text-3xl font-bold tracking-wider">00.00.00</div>
-            <div id="date" class="text-sm font-medium">Tanggal</div>
+        
+        <div class="flex items-center gap-6">
+            <!-- Tombol Reset -->
+            <button onclick="manualReset()" class="bg-red-500 hover:bg-red-600 text-white px-5 py-2.5 rounded-lg text-sm font-bold shadow-sm transition-all flex items-center gap-2 border border-red-400">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                Tutup Layanan (Reset)
+            </button>
+            
+            <div class="text-right border-l border-blue-500 pl-6">
+                <div id="clock" class="text-3xl font-bold tracking-wider">00.00.00</div>
+                <div id="date" class="text-sm font-medium text-blue-100">Tanggal</div>
+            </div>
         </div>
     </header>
 
@@ -103,12 +112,30 @@
             const today = new Date().toDateString();
             const storedDate = localStorage.getItem('queueDate');
             if (storedDate !== today) {
-                localStorage.setItem('queueDate', today);
-                localStorage.setItem('counters', JSON.stringify({ PST: 0, Pengaduan: 0, Konsul: 0, Prioritas: 0 }));
-                localStorage.setItem('queueList', JSON.stringify([]));
-                localStorage.removeItem('currentCall');
-                localStorage.removeItem('activeLokets');
+                eksekusiReset(today);
             }
+        }
+
+        // Fungsi Reset Manual via Tombol
+        function manualReset() {
+            if(confirm('Apakah PST sudah tutup hari ini?\n\nJika YA, seluruh data antrean di tabel ini dan di Layar TV akan dihapus/direset kembali ke awal.')) {
+                const today = new Date().toDateString();
+                eksekusiReset(today);
+                alert('Sistem berhasil di-reset. Daftar antrian telah dikosongkan.');
+            }
+        }
+
+        // Inti Logika Reset (Membersihkan Memory)
+        function eksekusiReset(todayDate) {
+            localStorage.setItem('queueDate', todayDate);
+            localStorage.setItem('counters', JSON.stringify({ PST: 0, Pengaduan: 0, Konsul: 0, Prioritas: 0 }));
+            localStorage.setItem('queueList', JSON.stringify([]));
+            localStorage.removeItem('currentCall');
+            
+            // Simpan status kosong agar terdeteksi oleh layar TV
+            localStorage.setItem('activeLokets', JSON.stringify({ PST: '-', Pengaduan: '-', Konsul: '-' }));
+            
+            renderTable();
         }
 
         // Tampilkan Tabel
@@ -119,19 +146,15 @@
             
             tbody.innerHTML = '';
             
-            // LOGIKA PENGURUTAN BARU (SORTING)
             queues.sort((a, b) => {
-                // 1. Status 'Dipanggil' dilempar ke paling bawah
                 if (a.status === 'Menunggu' && b.status === 'Dipanggil') return -1;
                 if (a.status === 'Dipanggil' && b.status === 'Menunggu') return 1;
 
-                // 2. Jika sama-sama 'Menunggu', dahulukan Prioritas
                 if (a.status === 'Menunggu' && b.status === 'Menunggu') {
                     if (a.kategori === 'Prioritas' && b.kategori !== 'Prioritas') return -1;
                     if (b.kategori === 'Prioritas' && a.kategori !== 'Prioritas') return 1;
                 }
 
-                // 3. Sisanya diurutkan berdasarkan waktu pendaftaran (id)
                 return a.id - b.id; 
             });
 
@@ -149,7 +172,6 @@
                     
                     tr.className = `transition-colors ${isPrioritasRow}`;
                     
-                    // Logika tombol aksi
                     let actionButton = '';
                     if (item.status === 'Menunggu') {
                         waitingCount++;
@@ -171,11 +193,10 @@
                 });
             }
 
-            // Update badge jumlah menunggu
             document.getElementById('totalWaiting').innerText = `${waitingCount} Menunggu`;
         }
 
-        // Fungsi saat tombol layanan diklik (Masuk ke tabel, bukan ke TV)
+        // Fungsi saat tombol layanan diklik 
         function tambahAntrian(kategori) {
             const nama = document.getElementById('nama').value.trim();
 
@@ -195,23 +216,20 @@
             const timeNow = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }).replace(/:/g, '.');
             
             const newQueue = {
-                id: Date.now(), // ID unik untuk fungsi panggil
+                id: Date.now(),
                 noAntrian: noAntrian,
                 nama: nama,
                 kategori: kategori,
                 timestamp: timeNow,
-                status: 'Menunggu' // Status awal
+                status: 'Menunggu'
             };
 
-            // Update memori sistem
             localStorage.setItem('counters', JSON.stringify(counters));
             
-            // Masukkan ke antrian lokal
             let queues = JSON.parse(localStorage.getItem('queueList')) || [];
             queues.push(newQueue);
             localStorage.setItem('queueList', JSON.stringify(queues));
 
-            // Perbarui UI Tabel dan kosongkan form
             renderTable();
             document.getElementById('queueForm').reset();
         }
@@ -222,14 +240,10 @@
             const index = queues.findIndex(q => q.id == id);
             
             if(index !== -1) {
-                // Ubah status jadi dipanggil
                 queues[index].status = 'Dipanggil';
                 const currentCall = queues[index];
                 
-                // Simpan perubahan ke memori
                 localStorage.setItem('queueList', JSON.stringify(queues));
-                
-                // Kirim perintah ke Layar TV
                 localStorage.setItem('currentCall', JSON.stringify(currentCall));
 
                 let activeLokets = JSON.parse(localStorage.getItem('activeLokets')) || { PST: '-', Pengaduan: '-', Konsul: '-' };
@@ -240,7 +254,6 @@
                 }
                 localStorage.setItem('activeLokets', JSON.stringify(activeLokets));
 
-                // Render ulang tabel (tombol berubah jadi 'Dipanggil' dan otomatis turun ke bawah)
                 renderTable();
             }
         }
