@@ -12,50 +12,55 @@
 </head>
 <body class="h-screen flex flex-col overflow-hidden">
     <!-- Header -->
-    <header class="bg-[#1d4ed8] text-white p-4 shadow-xl flex justify-between items-center">
-        <div class="flex items-center gap-4">
-            <h1 class="text-3xl font-black uppercase tracking-widest">Layanan PST BPS Kota Solok</h1>
+    <header class="bg-[#1d4ed8] text-white p-4 shadow-xl flex justify-between items-center z-10 shrink-0">
+        <div class="flex items-center gap-4 pl-4">
+            <h1 class="text-3xl font-black uppercase tracking-widest text-white drop-shadow-md">Pelayanan Statistik Terpadu</h1>
         </div>
-        <div id="clock" class="text-4xl font-black text-yellow-300">00.00.00</div>
+        <div id="clock" class="text-4xl font-black text-yellow-300 pr-4">00.00.00</div>
     </header>
 
     <!-- Main Display -->
-    <div class="flex-grow flex p-6 gap-6">
-        <!-- Panggilan Saat Ini (Ditambah Area Nama) -->
-        <div class="w-1/2 bg-white rounded-3xl shadow-2xl flex flex-col items-center justify-center border-8 border-blue-100 p-8 text-center">
-            <h2 class="text-3xl text-gray-500 font-bold mb-2 uppercase tracking-wide">Panggilan Untuk</h2>
+    <div class="flex-grow flex p-6 gap-6 bg-gray-100">
+        <!-- Panggilan Saat Ini -->
+        <div class="w-1/2 bg-white rounded-[2rem] shadow-2xl flex flex-col items-center justify-center border-[12px] border-blue-50 p-8 text-center relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-4 bg-blue-600"></div>
+            
+            <h2 class="text-3xl text-gray-500 font-bold mb-4 uppercase tracking-wider">Panggilan Untuk</h2>
             
             <!-- Area Nama Pendaftar -->
-            <div id="currentName" class="text-6xl font-black text-gray-900 mb-6 leading-tight min-h-[80px] break-words w-full px-4">-</div>
+            <div id="currentName" class="text-6xl font-black text-gray-900 mb-8 leading-tight min-h-[90px] break-words w-full px-4">-</div>
             
             <!-- Nomor dan Loket -->
-            <div class="bg-blue-50 w-full py-8 rounded-2xl mb-6">
-                <div id="currentNumber" class="text-8xl font-black text-blue-700 tracking-tighter">-</div>
+            <div class="bg-[#eff6ff] w-full py-10 rounded-3xl mb-8 border border-blue-100 shadow-inner">
+                <div id="currentNumber" class="text-8xl font-black text-[#1d4ed8] tracking-tighter drop-shadow-sm">-</div>
             </div>
             
-            <div id="currentLocket" class="text-4xl font-bold text-red-600 bg-red-100 px-8 py-4 rounded-full uppercase">-</div>
+            <div id="currentLocket" class="text-4xl font-bold text-red-600 bg-red-50 px-10 py-5 rounded-full uppercase border-2 border-red-100 shadow-sm">-</div>
         </div>
 
         <!-- Riwayat Loket -->
         <div class="w-1/2 flex flex-col gap-6">
-            <div class="flex-1 bg-white rounded-2xl shadow-lg flex items-center justify-between p-8 border-l-8 border-blue-500">
-                <div class="text-3xl text-gray-600 font-bold">LOKET PST</div>
-                <div id="loketPST" class="text-6xl font-black text-gray-800">-</div>
+            <div class="flex-1 bg-white rounded-2xl shadow-xl flex items-center justify-between p-10 border-l-[12px] border-[#3b82f6] relative overflow-hidden">
+                <div class="absolute right-0 top-0 opacity-5 w-32 h-32 bg-blue-500 rounded-bl-full"></div>
+                <div class="text-3xl text-gray-600 font-bold uppercase tracking-wider">Loket PST</div>
+                <div id="loketPST" class="text-7xl font-black text-gray-800 drop-shadow-md">-</div>
             </div>
-            <div class="flex-1 bg-white rounded-2xl shadow-lg flex items-center justify-between p-8 border-l-8 border-green-500">
-                <div class="text-3xl text-gray-600 font-bold">PENGADUAN</div>
-                <div id="loketPengaduan" class="text-6xl font-black text-gray-800">-</div>
+            <div class="flex-1 bg-white rounded-2xl shadow-xl flex items-center justify-between p-10 border-l-[12px] border-[#22c55e] relative overflow-hidden">
+                <div class="absolute right-0 top-0 opacity-5 w-32 h-32 bg-green-500 rounded-bl-full"></div>
+                <div class="text-3xl text-gray-600 font-bold uppercase tracking-wider">Pengaduan</div>
+                <div id="loketPengaduan" class="text-7xl font-black text-gray-800 drop-shadow-md">-</div>
             </div>
-            <div class="flex-1 bg-white rounded-2xl shadow-lg flex items-center justify-between p-8 border-l-8 border-purple-500">
-                <div class="text-3xl text-gray-600 font-bold">KONSULTASI</div>
-                <div id="loketKonsul" class="text-6xl font-black text-gray-800">-</div>
+            <div class="flex-1 bg-white rounded-2xl shadow-xl flex items-center justify-between p-10 border-l-[12px] border-[#a855f7] relative overflow-hidden">
+                <div class="absolute right-0 top-0 opacity-5 w-32 h-32 bg-purple-500 rounded-bl-full"></div>
+                <div class="text-3xl text-gray-600 font-bold uppercase tracking-wider">Konsultasi</div>
+                <div id="loketKonsul" class="text-7xl font-black text-gray-800 drop-shadow-md">-</div>
             </div>
         </div>
     </div>
 
     <!-- Ticker/Marquee -->
-    <div class="bg-gray-900 text-white p-3 text-2xl font-bold whitespace-nowrap overflow-hidden">
-        <marquee>Selamat Datang di Pelayanan Statistik Terpadu (PST) Badan Pusat Statistik Kota Solok. Melayani dengan Profesional, Integritas, dan Amanah.</marquee>
+    <div class="bg-gray-900 text-white p-4 text-2xl font-bold whitespace-nowrap overflow-hidden shrink-0">
+        <marquee scrollamount="8">Selamat Datang di Badan Pusat Statistik Kota Solok. Melayani dengan Profesional, Integritas, dan Amanah. Data Mencerdaskan Bangsa.</marquee>
     </div>
 
     <script>
@@ -66,20 +71,18 @@
         setInterval(updateClock, 1000);
 
         function updateDisplay() {
-            // Ambil data terbaru dari pendaftaran
             const currentCall = JSON.parse(localStorage.getItem('currentCall'));
             if (currentCall) {
                 document.getElementById('currentName').innerText = currentCall.nama;
                 document.getElementById('currentNumber').innerText = currentCall.noAntrian;
                 document.getElementById('currentLocket').innerText = `LOKET ${currentCall.kategori}`;
             } else {
-                // Kondisi jika reset hari
+                // Reset Layar jika ganti hari
                 document.getElementById('currentName').innerText = '-';
                 document.getElementById('currentNumber').innerText = '-';
                 document.getElementById('currentLocket').innerText = '-';
             }
 
-            // Update panel riwayat di kanan
             const activeLokets = JSON.parse(localStorage.getItem('activeLokets')) || { PST: '-', Pengaduan: '-', Konsul: '-' };
             document.getElementById('loketPST').innerText = activeLokets.PST;
             document.getElementById('loketPengaduan').innerText = activeLokets.Pengaduan;
