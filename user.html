@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel User - Antrian BPS Kota Solok</title>
+    <title>Pendaftaran - Antrian BPS Kota Solok</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
@@ -15,7 +15,7 @@
     <header class="bg-blue-700 text-white p-6 shadow-md flex justify-between items-center">
         <div>
             <h1 class="text-2xl font-bold">Sistem Antrian PST</h1>
-            <p class="text-sm text-blue-200">Badan Pusat Statistik Kota Solok</p>
+            <p class="text-sm text-blue-200">BPS Kota Solok</p>
         </div>
         <div class="text-right">
             <div id="clock" class="text-3xl font-bold tracking-wider">00:00:00</div>
@@ -26,25 +26,21 @@
     <!-- Main Content -->
     <main class="flex-grow flex items-center justify-center p-6">
         <div class="bg-white rounded-xl shadow-lg p-8 max-w-2xl w-full">
-            <h2 class="text-xl font-semibold text-gray-800 mb-6 text-center">Ambil Nomor Antrian Anda</h2>
+            <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">Silakan Ambil Antrian</h2>
             
-            <form id="queueForm" class="space-y-5">
+            <form id="queueForm" class="space-y-6">
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Nama Lengkap</label>
-                    <input type="text" id="nama" required class="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="Masukkan nama Anda">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">No. HP / WhatsApp</label>
-                    <input type="tel" id="telepon" required class="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="Contoh: 08123456789">
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Nama Lengkap</label>
+                    <input type="text" id="nama" required class="w-full border-2 border-gray-300 rounded-lg p-4 text-lg focus:ring-4 focus:ring-blue-200 focus:border-blue-500 focus:outline-none transition-all" placeholder="Masukkan nama Anda di sini...">
                 </div>
                 
-                <div class="pt-4">
-                    <label class="block text-sm font-medium text-gray-700 mb-3 text-center">Pilih Layanan</label>
+                <div class="pt-2">
+                    <label class="block text-sm font-semibold text-gray-700 mb-3 text-center">Pilih Tujuan Layanan</label>
                     <div class="grid grid-cols-2 gap-4">
-                        <button type="button" onclick="submitQueue('PST')" class="bg-blue-50 hover:bg-blue-600 hover:text-white text-blue-700 border border-blue-200 font-semibold py-4 rounded-xl transition-all shadow-sm">1. PST</button>
-                        <button type="button" onclick="submitQueue('Pengaduan')" class="bg-green-50 hover:bg-green-600 hover:text-white text-green-700 border border-green-200 font-semibold py-4 rounded-xl transition-all shadow-sm">2. Pengaduan</button>
-                        <button type="button" onclick="submitQueue('Konsul')" class="bg-purple-50 hover:bg-purple-600 hover:text-white text-purple-700 border border-purple-200 font-semibold py-4 rounded-xl transition-all shadow-sm">3. Layanan Konsul</button>
-                        <button type="button" onclick="submitQueue('Prioritas')" class="bg-red-50 hover:bg-red-600 hover:text-white text-red-700 border border-red-200 font-semibold py-4 rounded-xl transition-all shadow-sm">4. Prioritas (Lansia/Disabilitas)</button>
+                        <button type="button" onclick="submitQueue('PST')" class="bg-blue-50 hover:bg-blue-600 hover:text-white text-blue-700 border border-blue-200 font-bold py-5 rounded-xl transition-all shadow-sm text-lg">1. PST</button>
+                        <button type="button" onclick="submitQueue('Pengaduan')" class="bg-green-50 hover:bg-green-600 hover:text-white text-green-700 border border-green-200 font-bold py-5 rounded-xl transition-all shadow-sm text-lg">2. Pengaduan</button>
+                        <button type="button" onclick="submitQueue('Konsul')" class="bg-purple-50 hover:bg-purple-600 hover:text-white text-purple-700 border border-purple-200 font-bold py-5 rounded-xl transition-all shadow-sm text-lg">3. Layanan Konsul</button>
+                        <button type="button" onclick="submitQueue('Prioritas')" class="bg-red-50 hover:bg-red-600 hover:text-white text-red-700 border border-red-200 font-bold py-5 rounded-xl transition-all shadow-sm text-lg">4. Prioritas</button>
                     </div>
                 </div>
             </form>
@@ -67,43 +63,52 @@
             const storedDate = localStorage.getItem('queueDate');
             if (storedDate !== today) {
                 localStorage.setItem('queueDate', today);
-                localStorage.setItem('queues', JSON.stringify([]));
                 localStorage.setItem('counters', JSON.stringify({ PST: 0, Pengaduan: 0, Konsul: 0, Prioritas: 0 }));
+                localStorage.removeItem('currentCall');
+                localStorage.removeItem('activeLokets');
             }
         }
 
         function submitQueue(kategori) {
-            const nama = document.getElementById('nama').value;
-            const telepon = document.getElementById('telepon').value;
+            const nama = document.getElementById('nama').value.trim();
 
-            if(!nama || !telepon) {
-                alert('Mohon lengkapi Nama dan No HP terlebih dahulu.');
+            if(!nama) {
+                alert('Mohon isi Nama Lengkap Anda terlebih dahulu.');
+                document.getElementById('nama').focus();
                 return;
             }
 
             checkDailyReset();
 
             const prefixes = { PST: 'A', Pengaduan: 'B', Konsul: 'C', Prioritas: 'P' };
-            let counters = JSON.parse(localStorage.getItem('counters'));
+            let counters = JSON.parse(localStorage.getItem('counters')) || { PST: 0, Pengaduan: 0, Konsul: 0, Prioritas: 0 };
             counters[kategori]++;
             
             const noAntrian = `${prefixes[kategori]}-${String(counters[kategori]).padStart(3, '0')}`;
             
-            let queues = JSON.parse(localStorage.getItem('queues'));
-            queues.push({
-                id: Date.now(),
+            const newQueue = {
                 noAntrian: noAntrian,
                 nama: nama,
-                telepon: telepon,
                 kategori: kategori,
-                status: 'Menunggu',
                 timestamp: new Date().toLocaleTimeString('id-ID')
-            });
+            };
 
+            // Simpan counter terbaru
             localStorage.setItem('counters', JSON.stringify(counters));
-            localStorage.setItem('queues', JSON.stringify(queues));
+            
+            // Langsung set sebagai antrian yang sedang dipanggil (agar layar merespon)
+            localStorage.setItem('currentCall', JSON.stringify(newQueue));
 
-            alert(`Berhasil! Nomor Antrian Anda: ${noAntrian}\nSilakan tunggu panggilan.`);
+            // Update memori riwayat loket untuk layar sebelah kanan
+            let activeLokets = JSON.parse(localStorage.getItem('activeLokets')) || { PST: '-', Pengaduan: '-', Konsul: '-' };
+            if(kategori === 'Prioritas') {
+                activeLokets.PST = noAntrian; // Prioritas masuk ke panel PST di layar
+            } else {
+                activeLokets[kategori] = noAntrian;
+            }
+            localStorage.setItem('activeLokets', JSON.stringify(activeLokets));
+
+            alert(`Berhasil!\nNomor Anda: ${noAntrian}\nNama: ${nama}\n\nSilakan langsung menuju Loket ${kategori.toUpperCase()}.`);
             document.getElementById('queueForm').reset();
         }
 
