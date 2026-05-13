@@ -21,14 +21,22 @@
 
     <!-- Main Display -->
     <div class="flex-grow flex p-6 gap-6">
-        <!-- Current Called Area -->
-        <div class="w-1/2 bg-white rounded-3xl shadow-2xl flex flex-col items-center justify-center border-8 border-blue-100">
-            <h2 class="text-4xl text-gray-500 font-bold mb-4 uppercase">Nomor Panggilan</h2>
-            <div id="currentNumber" class="text-9xl font-black text-blue-700 tracking-tighter mb-4">-</div>
-            <div id="currentLocket" class="text-5xl font-bold text-red-600 bg-red-100 px-8 py-4 rounded-full">-</div>
+        <!-- Panggilan Saat Ini (Ditambah Area Nama) -->
+        <div class="w-1/2 bg-white rounded-3xl shadow-2xl flex flex-col items-center justify-center border-8 border-blue-100 p-8 text-center">
+            <h2 class="text-3xl text-gray-500 font-bold mb-2 uppercase tracking-wide">Panggilan Untuk</h2>
+            
+            <!-- Area Nama Pendaftar -->
+            <div id="currentName" class="text-6xl font-black text-gray-900 mb-6 leading-tight min-h-[80px] break-words w-full px-4">-</div>
+            
+            <!-- Nomor dan Loket -->
+            <div class="bg-blue-50 w-full py-8 rounded-2xl mb-6">
+                <div id="currentNumber" class="text-8xl font-black text-blue-700 tracking-tighter">-</div>
+            </div>
+            
+            <div id="currentLocket" class="text-4xl font-bold text-red-600 bg-red-100 px-8 py-4 rounded-full uppercase">-</div>
         </div>
 
-        <!-- Next in line Area -->
+        <!-- Riwayat Loket -->
         <div class="w-1/2 flex flex-col gap-6">
             <div class="flex-1 bg-white rounded-2xl shadow-lg flex items-center justify-between p-8 border-l-8 border-blue-500">
                 <div class="text-3xl text-gray-600 font-bold">LOKET PST</div>
@@ -57,19 +65,22 @@
         setInterval(updateClock, 1000);
 
         function updateDisplay() {
+            // Ambil data terbaru dari pendaftaran
             const currentCall = JSON.parse(localStorage.getItem('currentCall'));
             if (currentCall) {
+                document.getElementById('currentName').innerText = currentCall.nama;
                 document.getElementById('currentNumber').innerText = currentCall.noAntrian;
-                document.getElementById('currentLocket').innerText = `LOKET ${currentCall.kategori.toUpperCase()}`;
+                document.getElementById('currentLocket').innerText = `LOKET ${currentCall.kategori}`;
             }
 
+            // Update panel riwayat di kanan
             const activeLokets = JSON.parse(localStorage.getItem('activeLokets')) || { PST: '-', Pengaduan: '-', Konsul: '-' };
             document.getElementById('loketPST').innerText = activeLokets.PST;
             document.getElementById('loketPengaduan').innerText = activeLokets.Pengaduan;
             document.getElementById('loketKonsul').innerText = activeLokets.Konsul;
         }
 
-        // Listen for updates from other tabs
+        // Tangkap perubahan secara seketika saat tab user mensubmit data
         window.addEventListener('storage', updateDisplay);
         updateDisplay(); // initial load
     </script>
